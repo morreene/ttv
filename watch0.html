@@ -1,33 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Dropdown Box with CSV Options</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Dropdown</title>
+    <script>
+        window.onload = function() {
+            // Read CSV file and populate dropdown
+            fetch('urls.csv')
+                .then(response => response.text())
+                .then(csv => {
+                    const rows = csv.split('\n');
+                    const dropdown = document.getElementById('url-dropdown');
+
+                    for (const row of rows) {
+                        const columns = row.split(',');
+                        const option = document.createElement('option');
+                        option.value = columns[1];
+                        option.textContent = columns[0];
+                        dropdown.appendChild(option);
+                    }
+                });
+        };
+
+        // Update iframe when an option is selected
+        function updateIframe() {
+            const selectedUrl = document.getElementById('url-dropdown').value;
+            const iframe = document.getElementById('url-iframe');
+            iframe.src = selectedUrl;
+        }
+    </script>
 </head>
 <body>
-	<h1>Dropdown Box with CSV Options</h1>
-	
-	<!-- Select dropdown box -->
-	<select id="url-dropdown" onchange="loadUrl()">
-		<option value="">Select a URL</option>
-		<!-- Populate dropdown options from CSV file -->
-		<?php
-			$csv_file = fopen('urls.csv', 'r');
-			while (($row = fgetcsv($csv_file)) !== FALSE) {
-				echo '<option value="' . $row[1] . '">' . $row[0] . '</option>';
-			}
-			fclose($csv_file);
-		?>
-	</select>
-	
-	<!-- Iframe to display selected URL -->
-	<iframe id="url-iframe" width="100%" height="600px"></iframe>
-	
-	<script>
-		// Function to load selected URL in iframe
-		function loadUrl() {
-			var url = document.getElementById("url-dropdown").value;
-			document.getElementById("url-iframe").src = url;
-		}
-	</script>
+    <h1>URL Dropdown</h1>
+    <select id="url-dropdown" onchange="updateIframe()">
+        <option value="">Select a URL</option>
+    </select>
+    <br><br>
+    <iframe id="url-iframe" width="100%" height="600px" frameborder="0"></iframe>
 </body>
 </html>
